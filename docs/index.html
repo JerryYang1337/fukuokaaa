@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>九州冬季自駕・慢活孝親行</title>
+    <title>九州冬季自駕・慢活孝親版</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* CSS Reset & 基礎設定 */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #333; height: 100vh; display: flex; flex-direction: column; }
         
-        /* 頭部導航 (恢復原本的藍色風格) */
-        header { background: #0066cc; color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 1000; }
+        /* 頭部導航 */
+        header { background: #2c3e50; color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 1000; }
         header h1 { margin: 0; font-size: 1.2rem; font-weight: 700; }
-        header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
+        header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8; }
 
         /* 主要內容區 */
         main { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; }
@@ -23,31 +23,32 @@
         .tab-content.active { display: block; }
 
         /* 行程列表樣式 */
-        .timeline { padding: 15px; padding-bottom: 80px; /* 避開底部選單 */ }
-        .day-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; border-left: 5px solid #0066cc; }
-        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-        .day-tag { background: #0066cc; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-        .day-date { font-size: 0.85rem; color: #666; }
-        .day-title { font-size: 1.1rem; font-weight: bold; margin: 10px 0; color: #1a1a1a; }
+        .timeline { padding: 15px; padding-bottom: 80px; }
+        .day-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; border-left: 5px solid #2c3e50; }
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .day-tag { background: #2c3e50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .day-date { font-size: 0.85rem; color: #666; font-weight: 500; }
+        .day-title { font-size: 1.15rem; font-weight: bold; margin: 10px 0; color: #1a1a1a; }
         
         /* 詳細清單樣式 */
         .event-list { list-style: none; padding: 0; margin: 0; }
-        .event-list li { padding-left: 15px; position: relative; margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; color: #444; }
-        .event-list li::before { content: "•"; color: #0066cc; font-weight: bold; position: absolute; left: 0; }
-        .event-list li strong { color: #d35400; font-weight: 700; } /* 重點文字橘色 */
-        .time-badge { background: #e6f0ff; color: #0066cc; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; margin-right: 5px; }
+        .event-list li { padding-left: 20px; position: relative; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.6; color: #444; }
+        .event-list li::before { content: ""; width: 8px; height: 8px; background: #2c3e50; border-radius: 50%; position: absolute; left: 0; top: 8px; }
+        .event-list li strong { color: #e67e22; font-weight: 700; }
+        .highlight-time { color: #2980b9; font-weight: bold; font-family: monospace; font-size: 1.05em; margin-right: 5px; }
+
+        /* 資訊小卡 (吃飯/超市) */
+        .info-card { background: #f8f9fa; border: 1px dashed #adb5bd; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.9rem; color: #495057; }
+        .info-card strong { color: #2c3e50; }
 
         /* 按鈕樣式 */
-        .btn-nav { display: block; width: 100%; text-align: center; background: #e6f0ff; color: #0066cc; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 12px; font-size: 0.9rem; transition: background 0.2s; }
-        .btn-nav:active { background: #cfe2ff; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-nav { flex: 1; text-align: center; background: #eceff1; color: #2c3e50; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center; border: 1px solid #cfd8dc; }
+        .btn-nav:active { background: #cfd8dc; }
         
-        /* 資訊小卡 (吃飯/超市) */
-        .info-card { background: #fff8e1; border: 1px dashed #ffb300; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.9rem; color: #5d4037; }
-        .info-card strong { color: #e65100; }
-
         /* 警示框 */
-        .alert-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; display: flex; align-items: center; }
-        .alert-icon { margin-right: 8px; font-size: 1.2rem; }
+        .alert-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; display: flex; align-items: start; gap: 10px; line-height: 1.5; }
+        .alert-icon { font-size: 1.2rem; }
 
         /* 地圖容器 */
         #map { width: 100%; height: 100%; }
@@ -55,7 +56,7 @@
         /* 底部導航欄 */
         nav.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; height: 60px; z-index: 2000; padding-bottom: env(safe-area-inset-bottom); }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; text-decoration: none; font-size: 0.8rem; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        .nav-item.active { color: #0066cc; }
+        .nav-item.active { color: #2c3e50; }
         .nav-icon { font-size: 1.4rem; margin-bottom: 2px; }
 
     </style>
@@ -63,7 +64,7 @@
 <body>
 
 <header>
-    <h1>九州自駕・家庭慢活行</h1>
+    <h1>九州自駕・慢活孝親版</h1>
     <p>2026/01/30 - 02/04 (6天5夜)</p>
 </header>
 
@@ -75,7 +76,7 @@
                 <span class="alert-icon">⚠️</span>
                 <div>
                     <strong>長輩出遊提醒：</strong>
-                    <br>Day 4 離開阿蘇後山區餐廳極少，請務必在阿蘇市區吃飽或買好便當再上路。
+                    <br>Day 4 離開阿蘇後，山路沿途餐廳極少，強烈建議在阿蘇市區吃飽或買好便當再上路。
                 </div>
             </div>
 
@@ -86,11 +87,13 @@
                 </div>
                 <div class="day-title">抵達福岡 & 博多美食</div>
                 <ul class="event-list">
-                    <li><span class="time-badge">15:55</span> 抵達福岡機場 (FUK)。建議搭計程車直達飯店 (約20分)。</li>
-                    <li><span class="time-badge">18:30</span> <strong>晚餐：博多牛腸鍋</strong> (博多車站內或大山)。</li>
-                    <li><span class="time-badge">20:00</span> <strong>超商採買</strong>：飯店附近買大罐水、茶，準備明日車上喝。</li>
+                    <li><span class="highlight-time">15:55</span> 抵達福岡機場，搭計程車直達飯店。</li>
+                    <li><span class="highlight-time">18:30</span> <strong>晚餐：博多牛腸鍋</strong><br>車站美食街有很多選擇，不用走太遠。</li>
+                    <li><span class="highlight-time">20:00</span> <strong>超商採買</strong><br>飯店附近超商買大罐水、茶，準備明天車上喝。</li>
                 </ul>
-                <a href="https://www.google.com/maps/search/?api=1&query=33.579807738993864%2C130.42199624907377" target="_blank" class="btn-nav">📍 導航：今晚住宿 (福岡)</a>
+                <div class="btn-group">
+                    <a href="https://www.google.com/maps/search/?api=1&query=33.579807738993864%2C130.42199624907377" target="_blank" class="btn-nav">📍 導航：今晚住宿</a>
+                </div>
             </div>
 
             <div class="day-card">
@@ -98,15 +101,16 @@
                     <span class="day-tag">Day 2</span>
                     <span class="day-date">1/31 (六)</span>
                 </div>
-                <div class="day-title">租車出發 & 長崎漫遊</div>
+                <div class="day-title">取車出發 & 長崎漫遊</div>
                 <ul class="event-list">
-                    <li><span class="time-badge">08:00</span> <strong>取車：博多站博多口店</strong> (確認雪胎/ETC)。</li>
-                    <li><span class="time-badge">11:00</span> 長崎原爆資料館 & 平和公園。</li>
-                    <li><span class="time-badge">13:00</span> <strong>午餐：四海樓</strong> (強棒麵/景觀餐廳)。</li>
-                    <li><span class="time-badge">14:30</span> 哥拉巴園 & 大浦天主堂。</li>
-                    <li><span class="time-badge">18:30</span> 稻佐山夜景 (視長輩體力決定)。</li>
+                    <li><span class="highlight-time">08:00</span> <strong>取車 (WC Class 大型車)</strong><br>確認雪胎、ETC卡。</li>
+                    <li><span class="highlight-time">11:00</span> 長崎原爆資料館 & 平和公園。</li>
+                    <li><span class="highlight-time">13:00</span> <strong>午餐：四海樓</strong> (強棒麵)。</li>
+                    <li><span class="highlight-time">18:30</span> 稻佐山夜景 (視長輩體力決定)。</li>
                 </ul>
-                <a href="https://maps.app.goo.gl/o6oJRWrarHYHzS3F7" target="_blank" class="btn-nav">📍 導航：今晚住宿 (長崎)</a>
+                <div class="btn-group">
+                    <a href="https://maps.app.goo.gl/o6oJRWrarHYHzS3F7" target="_blank" class="btn-nav">📍 導航：今晚住宿</a>
+                </div>
             </div>
 
             <div class="day-card" style="border-left-color: #f39c12;">
@@ -116,18 +120,23 @@
                 </div>
                 <div class="day-title">渡輪體驗 & 入住阿蘇</div>
                 <ul class="event-list">
-                    <li><span class="time-badge">09:00</span> 準時離開長崎，前往島原港。</li>
-                    <li><span class="time-badge">12:05</span> <strong>🚢 熊本高速渡輪</strong> (11:30前需報到)。</li>
-                    <li><span class="time-badge">13:20</span> <strong>午餐：勝烈亭炸豬排</strong> (熊本市區)。</li>
-                    <li><span class="time-badge">14:40</span> <strong>熊本城</strong> (搭接駁車到城彩苑，少走路)。</li>
-                    <li><span class="time-badge">16:30</span> <strong>前往阿蘇飯店</strong>。</li>
-                    <li><span class="time-badge">18:00</span> <strong>Check-in 享受設施</strong> (晚餐飯店吃或阿蘇赤牛)。</li>
+                    <li><span class="highlight-time">09:00</span> 準時離開長崎，前往島原港。</li>
+                    <li><span class="highlight-time">12:05</span> <strong>🚢 熊本高速渡輪</strong> (11:30前報到)。</li>
+                    <li><span class="highlight-time">13:20</span> <strong>午餐：勝烈亭炸豬排</strong> (熊本市區)。</li>
+                    <li><span class="highlight-time">14:40</span> <strong>熊本城</strong> (搭接駁車到城彩苑，少走路)。</li>
+                    <li><span class="highlight-time">16:30</span> <strong>前往阿蘇</strong> (中途可以去超市)。</li>
+                    <li><span class="highlight-time">18:00</span> <strong>入住阿蘇飯店 (享受設施)</strong>。</li>
                 </ul>
                 <div class="info-card">
-                    <strong>🛒 補給推薦：</strong><br>
-                    途中經過 <strong>Youme Mart (新町店)</strong> 或阿蘇的 <strong>Mami Mart</strong> 超市，可買水果、優格回飯店。
+                    <strong>🛒 熊本-阿蘇沿途補給站：</strong><br>
+                    若不想在飯店吃晚餐，或想買消夜：<br>
+                    1. <strong>Youme Mart (新町店)</strong>：熊本市區大型超市。<br>
+                    2. <strong>Mami Mart (阿蘇店)</strong>：阿蘇市區，離飯店較近。
                 </div>
-                <a href="https://goo.gl/maps/shimabara_port" target="_blank" class="btn-nav">🚢 導航：島原港 (渡輪)</a>
+                <div class="btn-group">
+                    <a href="https://goo.gl/maps/shimabara_port" target="_blank" class="btn-nav">🚢 導航：島原港</a>
+                    <a href="https://goo.gl/maps/aso_station" target="_blank" class="btn-nav">📍 導航：阿蘇車站</a>
+                </div>
             </div>
 
             <div class="day-card" style="border-left-color: #27ae60;">
@@ -137,6 +146,128 @@
                 </div>
                 <div class="day-title">阿蘇慢活 & 高原公路</div>
                 <ul class="event-list">
-                    <li><span class="time-badge">08:00</span> 飯店早餐 & 晨間泡湯，享受飯店設施。</li>
-                    <li><span class="time-badge">11:00</span> <strong>退房 & 吃午餐 (重要!)</strong>。</li>
-                    <li><span class="time-badge">
+                    <li><span class="highlight-time">08:00</span> 飯店早餐 & 晨間溫泉。</li>
+                    <li><span class="highlight-time">11:00</span> <strong>退房 & 吃午餐 (重要!)</strong><br>長輩不耐餓，建議在阿蘇市區吃飽再上路。</li>
+                    <li><span class="highlight-time">12:30</span> <strong>大觀峰展望台</strong><br>車子停好走一下就能看到絕景，CP值最高。</li>
+                    <li><span class="highlight-time">13:30</span> <strong>山並公路 (Yamanami Hwy)</strong><br>絕美兜風路線，車程約1.5小時。</li>
+                    <li><span class="highlight-time">14:30</span> <strong>中途休息：瀨之本高原</strong><br>上廁所、買熱咖啡的好地方。</li>
+                    <li><span class="highlight-time">16:00</span> 抵達由布院 (天黑前抵達最安全)。</li>
+                </ul>
+                <div class="info-card">
+                    <strong>🍱 阿蘇午餐/補給推薦：</strong><br>
+                    1. <strong>道之驛 阿蘇 (Michi-no-Eki Aso)</strong>：<br>就在阿蘇站旁。有賣非常棒的「阿蘇赤牛便當」、新鮮草莓、牛奶。強烈建議買一些帶在車上吃！<br>
+                    2. <strong>鄉土料理 山賊旅路</strong>：<br>好吃的麵疙瘩與高菜飯，長輩會喜歡的熱食。<br>
+                    3. <strong>Imakin食堂</strong>：很有名但排隊太久，帶長輩不推薦。
+                </div>
+                <div class="btn-group">
+                    <a href="https://goo.gl/maps/michinoeki_aso" target="_blank" class="btn-nav">🍱 導航：道之驛阿蘇</a>
+                    <a href="https://goo.gl/maps/daikanbo" target="_blank" class="btn-nav">⛰️ 導航：大觀峰</a>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <div class="day-header">
+                    <span class="day-tag">Day 5</span>
+                    <span class="day-date">2/03 (二)</span>
+                </div>
+                <div class="day-title">太宰府 & 準時還車</div>
+                <ul class="event-list">
+                    <li><span class="highlight-time">09:00</span> 金鱗湖晨間散步。</li>
+                    <li><span class="highlight-time">11:00</span> 前往太宰府 (午餐在休息站或太宰府吃)。</li>
+                    <li><span class="highlight-time">13:00</span> <strong>太宰府天滿宮 & 梅枝餅</strong>。</li>
+                    <li><span class="highlight-time">15:30</span> <strong>開車回福岡</strong> (預留塞車時間)。</li>
+                    <li><span class="highlight-time">18:00</span> <strong>還車 (19:00期限)</strong>。</li>
+                </ul>
+                <div class="btn-group">
+                    <a href="https://www.google.com/maps/search/?api=1&query=33.5800368%2C130.4062282" target="_blank" class="btn-nav">📍 導航：今晚住宿</a>
+                    <a href="https://goo.gl/maps/toyota_rent_a_car_hakata" target="_blank" class="btn-nav">🚗 導航：還車地點</a>
+                </div>
+            </div>
+
+            <div class="day-card" style="border-left-color: #e74c3c;">
+                <div class="day-header">
+                    <span class="day-tag" style="background:#e74c3c;">Day 6</span>
+                    <span class="day-date">2/04 (三)</span>
+                </div>
+                <div class="day-title">返家</div>
+                <ul class="event-list">
+                    <li><span class="highlight-time">09:30</span> 退房 & 機場計程車。</li>
+                    <li><span class="highlight-time">12:15</span> 飛機起飛。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-map" class="tab-content">
+        <div id="map"></div>
+    </div>
+</main>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('list', this)">
+        <span class="nav-icon">📋</span>
+        <span>詳細行程</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('map', this)">
+        <span class="nav-icon">🗺️</span>
+        <span>路線地圖</span>
+    </div>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let mapInitialized = false;
+    let map;
+
+    function switchTab(tabName, element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        if (tabName === 'list') {
+            document.getElementById('tab-list').classList.add('active');
+        } else {
+            document.getElementById('tab-map').classList.add('active');
+            if (!mapInitialized) {
+                initMap();
+                mapInitialized = true;
+            } else {
+                setTimeout(() => { map.invalidateSize(); }, 100);
+            }
+        }
+    }
+
+    function initMap() {
+        // 設定中心點
+        map = L.map('map').setView([33.0, 131.0], 9);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const locations = [
+            { name: "博多車站", lat: 33.5898, lng: 130.4190 },
+            { name: "長崎", lat: 32.7745, lng: 129.8624 },
+            { name: "島原港", lat: 32.7634, lng: 130.3705 },
+            { name: "熊本", lat: 32.8062, lng: 130.7058 },
+            { name: "阿蘇住宿", lat: 32.9550, lng: 131.0660 },
+            { name: "大觀峰", lat: 32.9890, lng: 131.0820 },
+            { name: "瀨之本休息站", lat: 33.0708, lng: 131.1875 },
+            { name: "由布院", lat: 33.2657, lng: 131.3603 },
+            { name: "太宰府", lat: 33.5215, lng: 130.5349 }
+        ];
+
+        const latlngs = locations.map(loc => [loc.lat, loc.lng]);
+        const polyline = L.polyline(latlngs, {color: '#e67e22', weight: 5}).addTo(map);
+
+        locations.forEach((loc, index) => {
+            L.marker([loc.lat, loc.lng]).addTo(map)
+                .bindPopup(`<b>${loc.name}</b>`);
+        });
+
+        map.fitBounds(polyline.getBounds(), {padding: [50, 50]});
+    }
+</script>
+
+</body>
+</html>
